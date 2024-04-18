@@ -5,7 +5,7 @@ export default function MyPage() {
   return (
     <>
       <div className=" h-screen">
-        <h1 className="text-4xl font-bold text-center p-4">Map Component</h1>
+        <h1 className="text-4xl font-bold text-center p-4">Add a route here</h1>
         <MapContainer
           className="w-[60vh] h-[60vh] justify-center mx-auto my-4"
           center={[48.8566, 2.3522]}
