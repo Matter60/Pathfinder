@@ -1,12 +1,6 @@
 "use client";
 import { useState } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  Polyline,
-  Marker,
-  Popup,
-} from "react-leaflet";
+import { MapContainer, TileLayer, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +10,7 @@ export default function MyPage() {
   const [waypoints, setWaypoints] = useState([]);
   const [trackPoints, setTrackPoints] = useState([]);
   const [routePoints, setRoutePoints] = useState([]);
+  const [power, setPower] = useState([]);
 
   function handleOnChange(e) {
     const file = e.target.files[0];
@@ -44,27 +39,46 @@ export default function MyPage() {
       // Extracting longitude and latitude from tracks
       if (parsedFile.tracks) {
         const newTrackPoints = [];
-
+        const newTrackPower = []; // Array to store power values
         parsedFile.tracks.forEach((track) => {
           track.points.forEach((point) => {
             const { latitude, longitude } = point;
+            let power = null; // Initialize power as null
+            if (point.extensions && point.extensions.power) {
+              power = parseInt(point.extensions.power, 10); // Parse power value as integer
+            }
             newTrackPoints.push([latitude, longitude]);
+            newTrackPower.push(power); // Push power value to array
           });
         });
         setTrackPoints(newTrackPoints);
+        setPower(newTrackPower); // Set power values in component state
+
+        console.log("Track Power:", newTrackPower); // Log track power to console
       }
 
-      // Extracting longitude and latitude from routes
+      // Extracting power from routes (if available)
       if (parsedFile.routes) {
         const newRoutePoints = [];
+        const newRoutePower = []; // Array to store power values
         parsedFile.routes.forEach((route) => {
           route.points.forEach((point) => {
             const { latitude, longitude } = point;
+            let power = null; // Initialize power as null
+            if (point.extensions && point.extensions.power) {
+              power = parseInt(point.extensions.power, 10); // Parse power value as integer
+            }
             newRoutePoints.push([latitude, longitude]);
+            newRoutePower.push(power); // Push power value to array
           });
         });
         setRoutePoints(newRoutePoints);
+        setPower(newRoutePower); // Set power values in component state
+
+        console.log("Route Power:", newRoutePower); // Log route power to console
       }
+
+      // Extracting power from track  (if available)
     };
     reader.readAsText(file);
   }
@@ -87,17 +101,7 @@ export default function MyPage() {
             attribution="Google Maps"
             url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
             maxZoom={20}
-            subdomains={["mt0", "mt1", "mt2", "mt3"]}
           />
-          {waypoints.length > 0 &&
-            waypoints.map((waypoint, index) => (
-              <Marker
-                key={index}
-                position={[waypoint.latitude, waypoint.longitude]}
-              >
-                <Popup>Waypoint {index + 1}</Popup>
-              </Marker>
-            ))}
           {trackPoints.length > 0 && (
             <Polyline positions={trackPoints} color="red" />
           )}
