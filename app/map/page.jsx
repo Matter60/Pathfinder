@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { parseGPX } from "@we-gold/gpxjs";
+import { LineChart, Line } from "recharts";
 
 export default function MyPage() {
   const [waypoints, setWaypoints] = useState([]);
@@ -52,9 +53,7 @@ export default function MyPage() {
           });
         });
         setTrackPoints(newTrackPoints);
-        setPower(newTrackPower); // Set power values in component state
-
-        console.log("Track Power:", newTrackPower); // Log track power to console
+        setPower((prevPower) => [...prevPower, ...newTrackPower]); // Merge power values with previous state
       }
 
       // Extracting power from routes (if available)
@@ -73,9 +72,7 @@ export default function MyPage() {
           });
         });
         setRoutePoints(newRoutePoints);
-        setPower(newRoutePower); // Set power values in component state
-
-        console.log("Route Power:", newRoutePower); // Log route power to console
+        setPower((prevPower) => [...prevPower, ...newRoutePower]); // Merge power values with previous state
       }
 
       // Extracting power from track  (if available)
@@ -101,6 +98,7 @@ export default function MyPage() {
             attribution="Google Maps"
             url="http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
             maxZoom={20}
+            subdomains={["mt0", "mt1", "mt2", "mt3"]}
           />
           {trackPoints.length > 0 && (
             <Polyline positions={trackPoints} color="red" />
